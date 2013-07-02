@@ -215,9 +215,22 @@ function unicorn() {
 	}
 		
 	function initMouseListeners() {
-		document.addEventListener('mousemove', onMouseMove, false);
-		document.addEventListener( 'mousedown', onMouseDown, false );
-		document.addEventListener( 'mouseup', onMouseUp, false );
+		if ('ontouchstart' in window) {		
+			document.addEventListener("touchmove", onTouchMove, false);		
+		}
+		else{	
+			document.addEventListener('mousemove', onMouseMove, false);
+		}
+		document.addEventListener('mousedown', onMouseDown, false );
+		document.addEventListener('mouseup', onMouseUp, false );		
+	}
+	
+	function onTouchMove(e){
+		if(e.touches.length == 1){ // Only deal with one finger
+			var touch = e.touches[0]; // Get the information for finger #1
+			mouseX = touch.clientX;
+			mouseY = touch.clientY;				
+		}
 	}
 
 	function onMouseMove( event ) {
@@ -229,6 +242,7 @@ function unicorn() {
 	function onMouseDown(event) {
 		if (!unicorn_noclick) mouseDown = true; 
 	}
+	
 	function onMouseUp(event) {
 		unicorn_noclick = false;
 		mouseDown = false; 
@@ -434,7 +448,7 @@ var fartscroll = (function () {
 	  ]
   };
 
-  return function (trigger_distance) {  
+  return function () {  
 		var fartInterval;
 		
     var startFartHandler = function() {     
@@ -446,8 +460,14 @@ var fartscroll = (function () {
         window.clearInterval(fartInterval);
     };
 
-		window.addEventListener('mousedown', startFartHandler, false)
-		window.addEventListener('mouseup', stopFartHandler, false)
+			
+		if ('ontouchstart' in window) {				
+			window.addEventListener("touchstart", startFartHandler, false);		
+			window.addEventListener("touchend",  stopFartHandler, false);
+		} else {
+			window.addEventListener('mousedown', startFartHandler, false);
+			window.addEventListener('mouseup', stopFartHandler, false);
+		}
   };
 
   function playAudio(position){
